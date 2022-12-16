@@ -46,6 +46,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Form05_UserMaster.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form05_UserMaster.Designer.cs">
+      <DependentUpon>Form05_UserMaster.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form02_MDITest.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -64,9 +70,18 @@
     <Compile Include="Form03_ItemMaster.Designer.cs">
       <DependentUpon>Form03_ItemMaster.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form04_userMaster.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form04_userMaster.Designer.cs">
+      <DependentUpon>Form04_userMaster.cs</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Form05_UserMaster.resx">
+      <DependentUpon>Form05_UserMaster.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form02_MDITest.resx">
       <DependentUpon>Form02_MDITest.cs</DependentUpon>
     </EmbeddedResource>
@@ -75,6 +90,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form03_ItemMaster.resx">
       <DependentUpon>Form03_ItemMaster.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form04_userMaster.resx">
+      <DependentUpon>Form04_userMaster.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

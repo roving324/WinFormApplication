@@ -25,9 +25,9 @@ namespace MainForms
         public M03_Main()
         {
             // 로그인 창 실행.
-
             M01_Login M01 = new M01_Login();
-            M01.ShowDialog();
+            //M01.ShowDialog();
+            M01.Tag = true;
 
             if (!(Convert.ToBoolean(M01.Tag)/*Common.bLoginSF*/))
             {
@@ -169,7 +169,7 @@ namespace MainForms
             //    활성화 되어 있지 않은 매뉴 선택시 신규 탭 추가.
             // Form_List.DLL
             Assembly assembly = Assembly.LoadFrom($"{Application.StartupPath}\\Form_List.Dll");
-            // 클릭한 매누의 CS 파일 타입 확인 및 추출
+            // 클릭한 매뉴의 CS 파일 타입 확인 및 추출
             Type typeform = assembly.GetType($"Form_List.{e.ClickedItem.Name}", true);
             // Form 형식으로 전환
             Form FormMdi = (Form)Activator.CreateInstance(typeform);
@@ -200,7 +200,46 @@ namespace MainForms
             if(myTabControlr.TabPages.Count > 0) myTabControlr.SelectedTab.Dispose();
         }
 
+        #region < 툴바의 기능 연계 >
+        private void btnFunction_Click(object sender, EventArgs e)
+        {
+            ToolStripButton tsFunction = (ToolStripButton)sender;
+            DoFuncition(tsFunction.Text);
 
+        }
+
+        void DoFuncition(string sStatue)
+        {
+            // 오픈되어 있는 페이지가 없을 경우 return
+            if (myTabControlr.TabPages.Count == 0) return;
+
+            // 현재 활성화 된 화면의 조회/추가/삭제/저장 기능을 수행하는 메서드
+
+            #region < AS 와 IS >
+            // 캐스팅 : 상속받은 부모 클래스로부터 형 변환이 가능 할 경우 형변환을
+            //          명시적으로 실행하는 기능.
+
+            // as     : 대상으로부터 사옥받은 클래스이면, 형변환을 수행하고/
+            //          그렇지 않으면 null 값을 대입하는 연산자
+
+            // is     : 대상으로부터 상속받았는지 여부를 bool 형식으로 결과값만 반환.
+
+            // myTabControlr.SelectedTab.Controls[0] : Page 에 추가 된 컨트롤 중에 최상위 컨트롤
+            //                                         ex) Form04_ItemMaster
+            if (myTabControlr.SelectedTab.Controls[0] is BaseChildForm == false) return; // myTabControlr.SelectedTab.Controls[0]가 BaseChildForm에게 상속받았다면
+            BaseChildForm Child = (BaseChildForm)myTabControlr.SelectedTab.Controls[0];
+
+            //BaseChildForm Child = myTabControlr.SelectedTab.Controls[0] as BaseChildForm; // 상속을 받았다면 대입 아니면 null을 반환
+            //if (Child == null) return;
+            #endregion
+            
+            if      (sStatue == "조회") Child.DoInquire();
+            else if (sStatue == "추가") Child.DoNew();
+            else if (sStatue == "삭제") Child.DoDelete();
+            else if (sStatue == "저장") Child.DoSave();
+
+        }
+        #endregion
 
         //private void Form01_MDITest_Click(object sender, EventArgs e)
         //{

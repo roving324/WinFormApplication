@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -6,6 +7,7 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -284,8 +286,8 @@ namespace Form_List
             string sItemName = Convert.ToString(dgvGrid.CurrentRow.Cells["ITEMNAME"].Value); // 품목명
             string sItemType = Convert.ToString(dgvGrid.CurrentRow.Cells["ITEMTYPE"].Value); // 품목 타입
             string sItemDesc = Convert.ToString(dgvGrid.CurrentRow.Cells["ITEMDESC"].Value); // 품목상세
-            string sEndFlag  = Convert.ToString(dgvGrid.CurrentRow.Cells["ENDflag"].Value);  // 품목상세
-            string sProdDate = Convert.ToString(dgvGrid.CurrentRow.Cells["PRODDATE"].Value); // 품목상세
+            string sEndFlag  = Convert.ToString(dgvGrid.CurrentRow.Cells["ENDflag"].Value);  // 단종 여부
+            string sProdDate = Convert.ToString(dgvGrid.CurrentRow.Cells["PRODDATE"].Value); // 출시 일자
 
             // 필수 입력 정보 데이터 기입 여부 확인 (품목코드, 출시일자)
             string sMessage = string.Empty;
@@ -375,8 +377,8 @@ namespace Form_List
                               $"       ,ITEMDESC = '{sItemDesc}'      " +
                               $"       ,ENDFLAG  = '{sEndFlag}'       " +
                               $"       ,PRODDATE = '{sProdDate}'      " +
-                              $"       ,MAKEDATE = GETDATE()          " +
-                              $"       ,MAKER    = '{Common.sUserID}' " +
+                              $"       ,EDITDATE = GETDATE()          " +
+                              $"       ,EDITOR   = '{Common.sUserID}' " +
                               $"  WHERE ITEMCODE = '{sItemCode}'      ";
                 }
                 cmd.CommandText = sUpInSQL; // 3. 커맨드에 SQL 구문 등록.
@@ -397,6 +399,188 @@ namespace Form_List
                 sCon.Close(); 
             }
             
+        }
+
+        private void btnImageLoad_Click(object sender, EventArgs e)
+        {
+            // 이미지 불러오기
+            if (dgvGrid.RowCount == 0) return;
+
+            // 파일 탐색기 호출 (OpenFileDialog : 파일탐색기 클래스, Window 제공 API)
+            OpenFileDialog dialog = new OpenFileDialog();
+            DialogResult dirResult = dialog.ShowDialog();
+            if (dirResult != DialogResult.OK) return;
+
+            // 사진을 선택 하였을 경우 처리되는 로직
+            string sImageFilrPath = dialog.FileName; // 사진 파일이 저장되어 있는 풀더의 경로 와 사진파일의 정보.
+            // 사진 파일의 경로를 찾아가 Byte[] 배열 형식으로 반환되어 이미지뷰어(picItemImage) 에 표현된다.
+            picItemImage.Image = Bitmap.FromFile(sImageFilrPath);
+            // 파일의 경로 및 정보를 tag에 저장
+            picItemImage.Tag = sImageFilrPath;
+        }
+
+        private void btnImageSave_Click(object sender, EventArgs e)
+        {
+            // 선행 되어야 하는 일 : TB_ITEMMASTER 에 ITEMIMAGE 컬럼 생성 (image 데이터 타입)
+
+            // 저장 버튼 클릭 시 품목 별 사진 데이터베이스에 저장.
+
+            // 1. 밸리 데이션 체크
+            if(dgvGrid.RowCount == 0) return;      // 품목 정보 미조회
+            if(picItemImage.Image == null) return; // 저장 대상 이미지 미오픈
+
+            DialogResult drResult = MessageBox.Show("현재 이미지를 품목에 등록하시겠습니까?", "이미지 저장", MessageBoxButtons.YesNo);
+            if(drResult == DialogResult.No) return;
+
+            Byte[] bImage = null; // 이미지 파일이 등록 될 Byte 배열.
+
+            try
+            {
+                /*
+                   --------------      BinaryReader    ---------------     FileStream     ---------------
+                     APP (Byte)     <--------------->   RAM (Binary)    <-------------->    File (Byte)
+                   --------------                      ---------------                    ---------------
+
+
+                   Byte 바이트     : CPU가 아닌 가상머신(OS) 에서 이해 할 수 있는 코드의 이진 파일.
+                   Binary 바이너리 : 컴퓨터(CPU) 가 인실 할 수 있는 0,1로 이루어진 이진코드.
+                   
+                */
+                #region < 사진파일을 APP 으로 전달 >
+                // 2. 파일 스트림을 통해 파일을 오픈하고 바이너리 형식을 변한
+                // FileMode.Open   : 경로에 있는 사진 파일에 접근
+                // FileAccess.Read : 읽기 전용으로 읽어오겠다.
+                FileStream stream = new FileStream(Convert.ToString(picItemImage.Tag), FileMode.Open, FileAccess.Read);
+
+                // 3. 스트림을 통해 읽어온 Binary 코드 Byte 코드 변환.
+                BinaryReader reader = new BinaryReader(stream);
+
+                // 4. 만들어진 Binary 코드의 이미지를 Byte 화 하여 APP의 데이터 자료형 구조에 담는다.
+                bImage = reader.ReadBytes(Convert.ToInt32(stream.Length));
+
+                // 5. 바이너리 리더 종료
+                reader.Close();
+                // 6. 파일 스트림 종료
+                stream.Close();
+
+                #endregion
+
+                #region < 품목마스터에 품목 별 사진 저장 (UPDATE) >
+                Connect = new SqlConnection(Common.sConn);
+
+                // 데이터 배이스 오픈
+                Connect.Open();
+
+                // 커맨드 생성
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = Connect;
+
+                // 커맨드가 실행 할 SQL 구문 작성.
+                //string sUpdateSQL = " UPDATE TB_ITEMMASTER          " +
+                //                   $"    SET ITEMIMAGE = '{bImage}' " +
+                //                   $"  WHERE ITEMCODE  = '{dgvGrid.CurrentRow.Cells["ITEMCODE"].Value}'";
+                string sUpdateSQL = " UPDATE TB_ITEMMASTER          " +
+                                   $"    SET ITEMIMAGE = @ITEMIMAGE " +  // 품목 이미지 변수 생성.
+                                   $"  WHERE ITEMCODE  = '{dgvGrid.CurrentRow.Cells["ITEMCODE"].Value}'";
+                cmd.Parameters.AddWithValue("@ITEMIMAGE", bImage);
+
+                // 커맨드에 SQL 구문 등록
+                cmd.CommandText = sUpdateSQL;
+
+                // 커맨드 실행
+                cmd.ExecuteNonQuery();
+
+                MessageBox.Show("이미지가 정상적으로 등록되었습니다.");
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("이미지등록에 실패하였습니다.\r\n" + ex.ToString());
+            }
+            finally
+            {
+                Connect.Close();
+            }
+        }
+
+        private void dgvGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            // 품목을 선택 했을 때 이미지 표현
+            string sItemCode = Convert.ToString(dgvGrid.CurrentRow.Cells["ITEMCODE"].Value);
+
+            picItemImage.Image = null;
+
+            // 데이터베이스 오픈
+            Connect = new SqlConnection(Common.sConn);
+            try
+            {
+                Connect.Open();
+
+                // database 에서 이미지 바이트 코드를 가져올 SQL 구문 작성.
+                string sUpdateSQL = " SELECT ITEMIMAGE     " +
+                                    "   FROM TB_ITEMMASTER " +
+                                   $"  WHERE ITEMCODE = '{sItemCode}'";
+                // Adapter 설정
+                SqlDataAdapter Adapter = new SqlDataAdapter(sUpdateSQL, Connect);
+                // DataTable 에서 결과 받기
+                DataTable dtTemp = new DataTable();
+                Adapter.Fill(dtTemp);
+
+                // 품목 별 이미지 BYTE 코드가 있는지 체크
+                if (Convert.ToString(dtTemp.Rows[0]["ITEMIMAGE"]) == "") return;
+
+                // byte[] 배열 형식으로 받아올 변수 생성.
+                Byte[] bImage = null;
+
+                // byte 배열 형식으로 byte 코드 형변환.
+                bImage = (byte[])dtTemp.Rows[0]["ITEMIMAGE"];
+
+                // byte[] 배열인 bImage 를 Bitmap(픽셀 이미지로 변경해주는 클래스) 로 변환
+                picItemImage.Image = new Bitmap(new MemoryStream(bImage));
+            }
+            catch (Exception ex )
+            {
+                MessageBox.Show("이미지 로드에 실패하였습니다.\r\n" + ex.ToString());
+            }
+            finally
+            {
+                Connect.Close();
+            }
+        }
+
+        private void btnImageDelete_Click(object sender, EventArgs e)
+        {
+            // 이미지를 삭제할 대상 품목이 있는지 확인
+            if (dgvGrid.RowCount == 0) return;
+            string sItemCode = Convert.ToString(dgvGrid.CurrentRow.Cells["ITEMCODE"].Value);
+
+            // 품복별 이미지를 삭제 (null 로 update)
+            if (picItemImage.Image == null) return;
+
+            if (MessageBox.Show("해당 이미지를 삭제하시겠습니까?", "이미지 삭제", MessageBoxButtons.YesNo) == DialogResult.No) return;
+            Connect = new SqlConnection(Common.sConn);
+            try
+            {
+                Connect.Open();
+                string sUpdateSQL = " UPDATE TB_ITEMMASTER    " +
+                                    "    SET ITEMIMAGE = NULL " +
+                                   $"  WHERE ITEMCODE  = '{sItemCode}'";
+
+                SqlCommand cmd = new SqlCommand();
+                cmd.Connection = Connect;
+                cmd.CommandText = sUpdateSQL;
+                cmd.ExecuteNonQuery();
+                MessageBox.Show("이미지가 정상적으로 삭제되었습니다.");
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("이미지 삭제에 실패하였습니다.\r\n" + ex.ToString());
+            }
+            finally
+            {
+                Connect.Close();
+            }
         }
     }
 }

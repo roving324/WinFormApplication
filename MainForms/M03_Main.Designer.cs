@@ -28,10 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.menuStrip2 = new System.Windows.Forms.MenuStrip();
             this.M_Test = new System.Windows.Forms.ToolStripMenuItem();
             this.Form01_MDITest = new System.Windows.Forms.ToolStripMenuItem();
             this.Form02_MDITest = new System.Windows.Forms.ToolStripMenuItem();
+            this.B_MENU = new System.Windows.Forms.ToolStripMenuItem();
+            this.Form03_ItemMaster = new System.Windows.Forms.ToolStripMenuItem();
+            this.Form04_userMaster = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.btnSearch = new System.Windows.Forms.ToolStripButton();
             this.btnAdd = new System.Windows.Forms.ToolStripButton();
@@ -45,10 +49,9 @@
             this.toolStripStatusLabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.stsUserName = new System.Windows.Forms.ToolStripStatusLabel();
             this.stsNowDateTime = new System.Windows.Forms.ToolStripStatusLabel();
-            this.timer1 = new System.Windows.Forms.Timer();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.myTabControlr = new Assambl.MyTabControlr();
-            this.B_MENU = new System.Windows.Forms.ToolStripMenuItem();
-            this.Form03_ItemMaster = new System.Windows.Forms.ToolStripMenuItem();
+            this.Form05_UserMaster = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip2.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -78,14 +81,37 @@
             // Form01_MDITest
             // 
             this.Form01_MDITest.Name = "Form01_MDITest";
-            this.Form01_MDITest.Size = new System.Drawing.Size(180, 22);
+            this.Form01_MDITest.Size = new System.Drawing.Size(137, 22);
             this.Form01_MDITest.Text = "MDI_Test";
             // 
             // Form02_MDITest
             // 
             this.Form02_MDITest.Name = "Form02_MDITest";
-            this.Form02_MDITest.Size = new System.Drawing.Size(180, 22);
+            this.Form02_MDITest.Size = new System.Drawing.Size(137, 22);
             this.Form02_MDITest.Text = "MDI_Test02";
+            // 
+            // B_MENU
+            // 
+            this.B_MENU.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.Form03_ItemMaster,
+            this.Form04_userMaster,
+            this.Form05_UserMaster});
+            this.B_MENU.Name = "B_MENU";
+            this.B_MENU.Size = new System.Drawing.Size(91, 20);
+            this.B_MENU.Text = "기준정보관리";
+            this.B_MENU.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.M_Test_DropDownItemClicked);
+            // 
+            // Form03_ItemMaster
+            // 
+            this.Form03_ItemMaster.Name = "Form03_ItemMaster";
+            this.Form03_ItemMaster.Size = new System.Drawing.Size(180, 22);
+            this.Form03_ItemMaster.Text = "품목마스터";
+            // 
+            // Form04_userMaster
+            // 
+            this.Form04_userMaster.Name = "Form04_userMaster";
+            this.Form04_userMaster.Size = new System.Drawing.Size(180, 22);
+            this.Form04_userMaster.Text = "사용자관리";
             // 
             // toolStrip1
             // 
@@ -114,6 +140,7 @@
             this.btnSearch.Text = "조회";
             this.btnSearch.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnSearch.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnSearch.Click += new System.EventHandler(this.btnFunction_Click);
             // 
             // btnAdd
             // 
@@ -125,6 +152,7 @@
             this.btnAdd.Text = "추가";
             this.btnAdd.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnAdd.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnAdd.Click += new System.EventHandler(this.btnFunction_Click);
             // 
             // btnDelete
             // 
@@ -136,6 +164,7 @@
             this.btnDelete.Text = "삭제";
             this.btnDelete.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnDelete.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnDelete.Click += new System.EventHandler(this.btnFunction_Click);
             // 
             // btnSaveB
             // 
@@ -147,6 +176,7 @@
             this.btnSaveB.Text = "저장";
             this.btnSaveB.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnSaveB.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageAboveText;
+            this.btnSaveB.Click += new System.EventHandler(this.btnFunction_Click);
             // 
             // toolStripSeparator1
             // 
@@ -233,20 +263,11 @@
             this.myTabControlr.Size = new System.Drawing.Size(1034, 395);
             this.myTabControlr.TabIndex = 4;
             // 
-            // B_MENU
+            // Form05_UserMaster
             // 
-            this.B_MENU.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Form03_ItemMaster});
-            this.B_MENU.Name = "B_MENU";
-            this.B_MENU.Size = new System.Drawing.Size(91, 20);
-            this.B_MENU.Text = "기준정보관리";
-            this.B_MENU.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.M_Test_DropDownItemClicked);
-            // 
-            // Form03_ItemMaster
-            // 
-            this.Form03_ItemMaster.Name = "Form03_ItemMaster";
-            this.Form03_ItemMaster.Size = new System.Drawing.Size(180, 22);
-            this.Form03_ItemMaster.Text = "품목마스터";
+            this.Form05_UserMaster.Name = "Form05_UserMaster";
+            this.Form05_UserMaster.Size = new System.Drawing.Size(180, 22);
+            this.Form05_UserMaster.Text = "사용자관리2";
             // 
             // M03_Main
             // 
@@ -296,5 +317,7 @@
         private Assambl.MyTabControlr myTabControlr;
         private System.Windows.Forms.ToolStripMenuItem B_MENU;
         private System.Windows.Forms.ToolStripMenuItem Form03_ItemMaster;
+        private System.Windows.Forms.ToolStripMenuItem Form04_userMaster;
+        private System.Windows.Forms.ToolStripMenuItem Form05_UserMaster;
     }
 }
