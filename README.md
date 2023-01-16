@@ -75,25 +75,25 @@
 24. 선택한 품목 별 이미지 Byte 코드 데이터베이스에 서 조회 후 이미지뷰어(PictureBox) 에 표현하기. 
 
 25. 선택한 품목별 이미지 삭제 하기.
-26. 어플리케이션 설계서를 확인 후 사용자 마스터 화면 구현하기. 
+26. 
+27. 어플리케이션 설계서를 확인 후 사용자 마스터 화면 구현하기. 
 
 # 7일차
 27. Interface 를 통한 시스템 의 멤버 규칙 정의 
 
 28. Interface 상속 클래스(BasechildFrom) 에서 Interface 기능 구현 
    
-29. BasechildFrom 의 상속 클래스 (From05_userMaster) 에서 메서드 Overriding
+29. BasechildFrom 의 상속 클래스 (From05_userMaster) 에서 메서드 Overriding<br/>
   . virtual / abstrict  과 overriding
 
-30. 툴바 기능 연계를 위한 이벤트 메스드 간추리기 
+30. 툴바 기능 연계를 위한 이벤트 메스드 간추리기 <br/>
   . sender : 이벤트 발생시 메서드를 호출한 클래스의 객체 정보
 
 31. 캐스팅 과 (As / is) 를 통한 종속관계 클래스 연계 및 툴바 기능연결
 
-32. BaseChildForm 을 상속받은 사용자마스터(Form05_UserMaster) 매뉴 등록 및 
-     디자인
+32. BaseChildForm 을 상속받은 사용자마스터(Form05_UserMaster) 매뉴 등록 및 디자인
 
-33. 콤보박스 셋팅 SQL 로직 메서드화 하여 클래스라이브러리(Assemble 의 Common) 에 등록
+33. 콤보박스 셋팅 SQL 로직 메서드화 하여 클래스라이브러리(Assemble 의 Common) 에 등록<br/>
     및 사용자 마스터 화면(Form05_UserMaster) 에서 호출
 
 34. DBHelper 클래스 생성 후 데이터 베이스 Open 및 close 함수화
