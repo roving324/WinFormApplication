@@ -64,6 +64,22 @@
 
 20. 저장 버튼 클릭 시 UPDATE / INSERT SQL 분기 처리 
   - 품목마스터 테이블에 등록되어 있는 ITEMCODE 인지 확인 후 있으면 UPDATE , 없으면 INSERT
+  
+  - 갱신 이력이 있는 행만 추출 하여 DataTable에 담기
+  ```
+   DataTable dtTemp = ((DataTable)dgvGrid.DataSource).GetChanges();
+
+                foreach (DataRow dr in dtTemp.Rows)
+                {
+                    switch (dr.RowState)
+                    {
+                        case DataRowState.Added:
+
+                        case DataRowState.Modified:
+                           
+                        case DataRowState.Deleted:
+                    }
+  ```
 
 21. 그리드 에서 나타난 품목코드를 중복 추가 등록 시 검출 로직 적용. 
 
