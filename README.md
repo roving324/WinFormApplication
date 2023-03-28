@@ -55,6 +55,47 @@
 
 # 5일차
 16. 조회 할때 조회조건 에 따른 SQL 구문 Where 절 작성 및 적용. 
+```
+ SqlConnection sCon = new SqlConnection(Common.sConn);
+            try
+            {
+                sCon.Open();
+
+                // 2. 삭제 (delete) 명령어를 수행할 Command 객체
+                SqlCommand cmd = new SqlCommand();
+
+                // 3. 갱신 데이터 승인 권한 가지고 오기. Transation
+               sTran = sCon.BeginTransaction();
+
+                // 4. 커맨드에 트랜잭션 등록.
+                cmd.Transaction = sTran;
+
+                // 5. 커맨드에 접속경로 등록.
+                cmd.Connection = sCon;
+
+                // 6. DELETE SQL 구문 작성 및 Command 에 등록.
+
+                // 선택한 행에 있는 ITEMCODE 값 추출 후 변수에 등록하기.
+                string sItemCode = Convert.ToString(dgvGrid.CurrentRow.Cells["ITEMCODE"].Value);
+                string sDeleteSql = string.Empty;
+                sDeleteSql += " DELETE TB_ItemMaster       ";
+                sDeleteSql += $"  WHERE ITEMCODE = '{sItemCode}' ";
+
+                // 7. Command 실행.
+                cmd.CommandText = sDeleteSql;
+                cmd.ExecuteNonQuery();
+
+                // 8. 정상 등록 시 COMMIT
+                sTran.Commit();
+
+                // 9. 정상 삭제 메세지 표현.
+                MessageBox.Show("품목 정보를 삭제 하였습니다.");
+
+                // 10. 재조회.
+                bFlag = false;
+                btnSearch_Click(); //btnSearch_Click(null,null);
+            }
+```
 
 17. 콤보박스 선택 데이터 중 모두선택 추가 를 위한 SQL 구문의 UNION 절 적용
 
